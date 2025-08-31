@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import { taskModel } from "../models/task.model.js";
 import { userModel } from "../models/user.model.js";
 import { Response } from "../utils/Response.util.js";
 import { generateToken } from "../utils/token.util.js";
@@ -54,10 +55,15 @@ export const login = async (req, res) => {
 
 export const getProfile = async (req, res) => {
   try {
-    const user = await userModel.findById(req.user.id).select("-password");
+    const user = await userModel.findById(req.user._id).select("-password");
+    const userTask = await taskModel.find({userId: req.user._id}).sort({ createdAt: -1 });
     if (!user) return Response(404, false, "User not found", res);
 
-    Response(200, true, "User profile", res, user);
+    const data = {
+      profile: user,
+      task: userTask
+    }
+    Response(200, true, "User profile", res, data);
   } catch (error) {
     console.log(error);
     Response(500, false, "Server error", res);

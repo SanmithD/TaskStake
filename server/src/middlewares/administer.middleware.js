@@ -66,7 +66,7 @@ export const loginMiddleware = (req, res, next) => {
 
 export const isAuthorized = async(req, res, next) =>{
     try {
-        const token = req.cookies.jwt;
+        const token = req.cookies.token;
         if(!token) return Response(400, false, 'Invalid token',res);
 
         const decode = jwt.verify(token, process.env.JWT_SECRET);

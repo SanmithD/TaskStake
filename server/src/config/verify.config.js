@@ -1,8 +1,8 @@
 import { fundModel } from "../models/fund.model.js";
 import { submissionModel } from "../models/submission.model.js";
 import { taskModel } from "../models/task.model.js";
-import { haversineMeters } from "../utils/geo.util.js";
-import { withinWindow } from "../utils/time.util.js";
+import haversineMeters from "../utils/geo.util.js";
+import withinWindow from "../utils/time.util.js";
 
 function applyFunds(amount, status) {
   return status === "completed"

@@ -1,0 +1,87 @@
+import { Eye, EyeOff } from 'lucide-react';
+import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import { UseAuthStore } from '../store/UseAuthStore';
+
+function Login() {
+  const navigate = useNavigate();
+  const { login, isLoading } = UseAuthStore();
+  const [isVisible, setIsVisible] = useState(false);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
+
+  const handleChange = (e) =>{
+    const { name, value } = e.target;
+    setFormData({
+      ...formData, [name]: value
+    });
+  };
+
+  const handleSubmit = async(e) => {
+    e.preventDefault();
+    await login(formData, navigate);
+  };
+
+  return (
+    <div className="h-screen w-full flex justify-center items-center bg-gradient-to-br from-blue-50 to-blue-100">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
+        
+        <div className="flex flex-col items-center space-y-2 mb-6">
+          <h1 className="text-3xl font-bold tracking-wide text-blue-600">TaskStake</h1>
+          <p className="text-gray-600 text-lg">Growth pays off. Welcome Back👋</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <input 
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Enter your email"
+              className="w-full border text-black border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <div className="relative">
+              <input 
+                type={isVisible ? "text" : "password"}
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Enter your password"
+                className="w-full border text-black border-gray-300 rounded-lg px-4 py-2 pr-10 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              />
+              <button 
+                type="button"
+                onClick={() => setIsVisible(!isVisible)}
+                className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+              >
+                {isVisible ? <EyeOff size={18}/> : <Eye size={18}/>}
+              </button>
+            </div>
+          </div>
+
+          <button 
+            type="submit"
+            disabled={isLoading}
+            className="w-full cursor-pointer bg-blue-600 text-white font-medium py-2 rounded-lg hover:bg-blue-700 transition"
+          >
+            { isLoading ? "Loading..." : 'Login' }
+          </button>
+        </form>
+
+        <p className="text-center text-sm text-gray-500 mt-6">
+          Create account <a href="/signup" className="text-blue-600 hover:underline">Login</a>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+export default Login;
