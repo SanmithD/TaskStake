@@ -4,17 +4,17 @@ import { Route, Routes } from 'react-router-dom';
 
 const Signup = lazy(()=> import('./pages/Signup'));
 const Login = lazy(()=> import('./pages/Login'));
-const Dashboard = lazy(()=> import('./pages/Dashboard'));
+const MainLayout = lazy(()=> import('./pages/MainLayout'));
 
 function App() {
   return (
-    <div>
+    <div className="h-screen bg-[#FFFFFF] " >
       <Toaster position="bottom-right" />
       <Suspense fallback={"Loading..."} >
         <Routes>
           <Route path="/signup" element={<Signup/>}/>
           <Route path="/login" element={<Login/>}/>
-          <Route path="/" element={<Dashboard/>}/>
+          <Route path="/" element={<MainLayout/>}/>
         </Routes>
       </Suspense>
     </div>

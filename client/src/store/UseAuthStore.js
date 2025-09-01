@@ -2,7 +2,7 @@ import { toast } from "react-hot-toast";
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axiosInstance.js";
 
-export const UseAuthStore = create((set) => ({
+export const UseAuthStore = create((set, get) => ({
   isLoading: false,
   auth: null,
   isAuthenticated: false,
@@ -85,16 +85,31 @@ export const UseAuthStore = create((set) => ({
     }
   },
 
-  deleteAccount: async () => {
+  deleteAccount: async (navigate) => {
     set({ isLoading: true });
     try {
       await axiosInstance.delete("/auth/delete");
       set({ isLoading: false, isAuthenticated: false, auth: null });
       toast.success("Account delete");
+      navigate('/signup')
     } catch (error) {
       const msg =
         error.response?.data?.msg || error.message || "Something went wrong";
       toast.error(msg);
     }
   },
+
+  updateProfile: async(data) =>{
+    set({ isLoading: true });
+    try {
+      await axiosInstance.put("/auth/update", data);
+      set({ isLoading: false, isAuthenticated: true});
+      await get().profile();
+      toast.success("Profile updated");
+    } catch (error) {
+      const msg =
+        error.response?.data?.msg || error.message || "Something went wrong";
+      toast.error(msg);
+    }
+  }
 }));

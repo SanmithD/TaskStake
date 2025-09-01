@@ -29,10 +29,8 @@ function Signup() {
   return (
     <div className="h-screen w-full flex justify-center items-center bg-gradient-to-br from-blue-50 to-blue-100">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
-        <div className="flex flex-col items-center space-y-2 mb-6">
-          <h1 className="text-3xl font-bold tracking-wide text-blue-600">
-            TaskStake
-          </h1>
+        <div className="flex flex-col items-center mb-6">
+          <img src="TaskStakeImg.png" alt="logo" className="h-40 w-full"  />
           <p className="text-gray-600 text-lg">Growth pays off. Welcome 👋</p>
         </div>
 

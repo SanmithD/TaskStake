@@ -14,7 +14,7 @@ export const addFund = async (req, res) => {
     let fund = await fundModel.findOne({ userId });
 
     if (fund) {
-      fund.amount += amount;
+      fund.amount += Number(amount);
       await fund.save();
       return Response(200, true, "Funds updated successfully", res, fund);
     }
