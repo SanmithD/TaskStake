@@ -1,24 +1,76 @@
-import { Calendar, ClipboardList } from "lucide-react";
-import { useState } from "react";
+import { Calendar, ClipboardList, MapPin } from "lucide-react";
+import { useEffect, useState } from "react";
 import { UseTaskStore } from "../store/UseTaskStore";
 
 function Tasks() {
-    const [form, setForm] = useState({
-        title: "",
-        type: "general",
-        startAt: "",
-        endAt: "",
-    });
-    const { addTask, isLoading } = UseTaskStore();
+  const [form, setForm] = useState({
+    title: "",
+    type: "general",
+    startAt: "",
+    endAt: "",
+    targetLocation: {
+      lat: "",
+      lng: "",
+      radiusMeters: 100,
+    },
+  });
+
+  const { addTask, isLoading } = UseTaskStore();
+
+  useEffect(() => {
+    if (form.type === "travel" && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setForm((prev) => ({
+            ...prev,
+            targetLocation: {
+              ...prev.targetLocation,
+              lat: pos.coords.latitude,
+              lng: pos.coords.longitude,
+            },
+          }));
+        },
+        (err) => {
+          console.error("Geolocation error:", err);
+        }
+      );
+    }
+  }, [form.type]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    if (["lat", "lng", "radiusMeters"].includes(name)) {
+      setForm((prev) => ({
+        ...prev,
+        targetLocation: { ...prev.targetLocation, [name]: value },
+      }));
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await addTask(form);
+    await addTask({
+      ...form,
+      targetLocation: {
+        lat: parseFloat(form.targetLocation.lat),
+        lng: parseFloat(form.targetLocation.lng),
+        radiusMeters: parseInt(form.targetLocation.radiusMeters, 10),
+      },
+    });
+
+    setForm({
+      targetLocation: {
+        lat: "",
+        lng: "",
+        radiusMeters: 100,
+      },
+      title: "",
+      type: "general",
+      startAt: "",
+      endAt: "",
+    });
   };
 
   return (
@@ -29,9 +81,7 @@ function Tasks() {
       >
         <div className="flex items-center gap-2 border-b pb-3 mb-3">
           <ClipboardList className="text-blue-600" size={28} />
-          <h2 className="text-2xl font-semibold text-gray-800">
-            Add New Task
-          </h2>
+          <h2 className="text-2xl font-semibold text-gray-800">Add New Task</h2>
         </div>
 
         <div>
@@ -99,11 +149,59 @@ function Tasks() {
           </div>
         </div>
 
+        {form.type === "travel" && (
+          <div className="space-y-2">
+            <label className="text-gray-700 font-medium mb-1 flex items-center gap-2">
+              <MapPin className="text-red-500" size={18} />
+              Task Location
+            </label>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <input
+                type="number"
+                step="any"
+                name="lat"
+                value={form.targetLocation.lat}
+                onChange={handleChange}
+                placeholder="Latitude"
+                disabled={form.type === "travel"}
+                className={`w-full border px-3 py-2 rounded-lg ${
+                  form.type === "travel" ? "bg-gray-100 cursor-not-allowed" : ""
+                }`}
+              />
+              <input
+                type="number"
+                step="any"
+                name="lng"
+                value={form.targetLocation.lng}
+                onChange={handleChange}
+                placeholder="Longitude"
+                disabled={form.type === "travel"}
+                className={`w-full border px-3 py-2 rounded-lg ${
+                  form.type === "travel" ? "bg-gray-100 cursor-not-allowed" : ""
+                }`}
+              />
+              <input
+                type="number"
+                name="radiusMeters"
+                value={form.targetLocation.radiusMeters}
+                onChange={handleChange}
+                placeholder="Radius (m)"
+                className="w-full border px-3 py-2 rounded-lg"
+              />
+            </div>
+            {form.type === "travel" && (
+              <p className="text-sm text-gray-500">
+                Location auto-detected from your device.
+              </p>
+            )}
+          </div>
+        )}
+
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold text-lg shadow hover:bg-blue-700 transition"
+          className="w-full cursor-pointer bg-blue-600 text-white py-3 rounded-lg font-semibold text-lg shadow hover:bg-blue-700 transition"
         >
-          { isLoading ? 'Creating...' : 'Create new Task' }
+          {isLoading ? "Creating..." : "Create new Task"}
         </button>
       </form>
     </div>

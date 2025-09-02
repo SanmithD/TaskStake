@@ -1,39 +1,47 @@
 import { taskModel } from "../models/task.model.js";
 import { Response } from "../utils/Response.util.js";
 
-// ADD TASK 
+// ADD TASK
 export const addTask = async (req, res) => {
   const userId = req.user?._id;
   if (!userId) return Response(403, false, "Unauthorized", res);
 
   const { title, type, targetLocation, startAt, endAt, status } = req.body;
 
-  if (!title || !type)
+  if (!title || !type) {
     return Response(400, false, "Title and type are required", res);
+  }
 
   try {
     const newTask = new taskModel({
       userId,
       title,
       type,
-      targetLocation,
       startAt,
       endAt,
       status: status || "pending",
+      targetLocation: targetLocation
+        ? {
+            lat: targetLocation.lat,
+            lng: targetLocation.lng,
+            radiusMeters: targetLocation.radiusMeters || 100,
+          }
+        : undefined,
     });
 
     await newTask.save();
-    Response(201, true, "Task created successfully", res, newTask);
+    return Response(201, true, "Task created successfully", res, newTask);
   } catch (error) {
-    console.log(error);
-    Response(500, false, "Server error", res);
+    console.error(error);
+    return Response(500, false, "Server error", res);
   }
 };
+
 
 // GET ALL TASKS 
 export const getMyTasks = async (req, res) => {
   try {
-    const tasks = await taskModel.find({ userId: req.user._id });
+    const tasks = await taskModel.find({ userId: req.user._id }).sort({ createdAt: -1 });
     if(!tasks) return Response(404, false, "Not found", res);
 
     Response(200, true, "User tasks", res, tasks);
