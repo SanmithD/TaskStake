@@ -11,8 +11,8 @@ function MainLayout() {
 
   return (
     <div className="h-screen mx-4 text-black flex">
-      <div className={`${mobileView ? "border-r" : "border-0"} ${mobileView ? "w-50" : "w-0"} pr-4 py-6 space-y-4`}>
-        <div className="flex pr-2">
+      <div className={`${mobileView ? "border-r" : "border-0"} ${mobileView ? "w-full" : "w-0"} pr-4 py-6 space-y-4`}>
+        <div className="flex pr-3">
           {mobileView ? (
             <img src="TaskStakeImg.png" alt="logo" className="h-20 w-full" />
           ) : null}

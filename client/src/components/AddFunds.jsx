@@ -15,7 +15,7 @@ function AddFunds() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto text-black">
+    <div id="addFund" className="max-w-2xl mx-auto text-black">
       <header>
         <h1 className="text-4xl font-bold">Add Funds</h1>
         <p className="text-gray-600 mt-2">

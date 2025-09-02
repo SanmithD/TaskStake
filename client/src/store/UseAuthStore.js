@@ -111,5 +111,20 @@ export const UseAuthStore = create((set, get) => ({
         error.response?.data?.msg || error.message || "Something went wrong";
       toast.error(msg);
     }
+  },
+
+  getSubmittedTask: async() =>{
+    set({ isLoading: true });
+    try {
+      const response = await axiosInstance.get("/submission/mine");
+      set({ isLoading: false, isAuthenticated: true});
+      console.log(response.data);
+      await get().profile();
+      toast.success("Profile updated");
+    } catch (error) {
+      const msg =
+        error.response?.data?.msg || error.message || "Something went wrong";
+      toast.error(msg);
+    }
   }
 }));

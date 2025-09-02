@@ -1,3 +1,4 @@
+import { fundModel } from "../models/fund.model.js";
 import { taskModel } from "../models/task.model.js";
 import { Response } from "../utils/Response.util.js";
 
@@ -117,6 +118,48 @@ export const updateTaskStatus = async (req, res) => {
     Response(200, true, "Task status updated", res, task);
   } catch (error) {
     console.log(error);
+    Response(500, false, "Server error", res);
+  }
+};
+
+function applyFunds(amount, status) {
+  return status === "completed"
+    ? amount + amount * 0.05
+    : amount - amount * 0.10;
+}
+
+export const autoFailExpiredTasks = async (req, res) => {
+  try {
+    const now = new Date();
+
+    const expiredTasks = await taskModel.find({
+      status: "pending",
+      endAt: { $lt: now }
+    });
+
+    if (!expiredTasks.length) {
+      return Response(200, true, "No expired tasks found", res);
+    }
+
+    const results = [];
+
+    for (const task of expiredTasks) {
+      task.status = "failed";
+      await task.save();
+
+      const fund = await fundModel.findOne({ userId: task.userId });
+      if (fund) {
+        fund.amount = applyFunds(fund.amount, "failed");
+        await fund.save();
+      }
+
+      results.push({ taskId: task._id, userId: task.userId, status: "failed" });
+    }
+
+    Response(200, true, "Expired tasks processed", res, results);
+
+  } catch (error) {
+    console.error(error);
     Response(500, false, "Server error", res);
   }
 };

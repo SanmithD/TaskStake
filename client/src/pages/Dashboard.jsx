@@ -1,7 +1,9 @@
 import { Calendar, Clock, MapPin } from "lucide-react";
 import { useEffect } from "react";
 import EditTask from "../components/EditTask";
+import { UseSubmissionStore } from "../store/UseSubmissionStore";
 import { UseTaskStore } from "../store/UseTaskStore";
+import Controller from '../components/Controller';
 
 function Dashboard() {
   const { getAllTasks, allTasks } = UseTaskStore();
@@ -17,25 +19,28 @@ function Dashboard() {
       {allTasks?.length === 0 ? (
         <p className="text-gray-500">No tasks available</p>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 w-[350px] md:w-full md:px-4 ">
           {allTasks?.map((task) => (
             <div
               key={task._id}
               onClick={() =>
                 document.getElementById(`my_modal_${task._id}`).showModal()
               }
-              className="bg-white border rounded-xl shadow-md p-5 hover:shadow-lg transition"
+              className="bg-white border cursor-pointer hover:bg-amber-50 rounded-xl shadow-md p-5 hover:shadow-lg transition"
             >
               <div className="flex justify-between items-center mb-3">
                 <h2 className="text-xl font-semibold text-gray-800">
                   {task.title}
                 </h2>
                 <span
-                  className={`px-3 py-1 text-sm rounded-full font-medium ${
-                    task.status === "pending"
-                      ? "bg-yellow-100 text-yellow-700"
-                      : "bg-green-100 text-green-700"
-                  }`}
+                  className={`px-3 py-1 text-sm rounded-full font-medium
+    ${
+      task.status === "pending"
+        ? "bg-yellow-100 text-yellow-700"
+        : task.status === "failed" || task.status === "cancelled"
+        ? "bg-red-400 text-white"
+        : "bg-green-100 text-green-700"
+    }`}
                 >
                   {task.status}
                 </span>
@@ -76,13 +81,8 @@ function Dashboard() {
               )}
               <dialog id={`my_modal_${task._id}`} className="modal">
                 <div className="modal-box">
-                  <EditTask taskDetails={task}/>
-                  <div className="modal-action">
-                    <form method="dialog">
-                      {/* if there is a button in form, it will close the modal */}
-                      <button className="btn">Close</button>
-                    </form>
-                  </div>
+                  <EditTask taskDetails={task} />
+                  <Controller task={task._id}/>
                 </div>
               </dialog>
             </div>

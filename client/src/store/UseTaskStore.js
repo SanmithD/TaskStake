@@ -19,12 +19,12 @@ export const UseTaskStore = create((set, get) => ({
       toast.error(msg);
     }
   },
+
   getAllTasks: async() =>{
     set({ isLoading: true });
     try {
       const response = await axiosInstance.get(`/task/get`);
       set({ isLoading: false, allTasks: response.data.data });
-      console.log(response.data);
     } catch (error) {
       console.log(error);
       const msg =
@@ -36,15 +36,30 @@ export const UseTaskStore = create((set, get) => ({
   updateTask: async(data, id) =>{
     set({ isLoading: true });
     try {
-      const response = await axiosInstance.put(`/task/update/${id}`,data);
+      await axiosInstance.put(`/task/update/${id}`,data);
       set({ isLoading: false});
       await get().getAllTasks();
-      console.log(response.data);
     } catch (error) {
       console.log(error);
       const msg =
         error.response?.data?.msg || error.message || "Something went wrong";
       toast.error(msg);
+    }
+  },
+
+  deleteTask: async(id) =>{
+    set({ isLoading: true });
+    try {
+      await axiosInstance.delete(`/task/delete/${id}`);
+      set({ isLoading: false});
+      await get().getAllTasks();
+      toast.success("Task Deleted");
+    } catch (error) {
+      console.log(error);
+      const msg =
+        error.response?.data?.msg || error.message || "Something went wrong";
+      toast.error(msg);
+      set({ isLoading: false });
     }
   }
 }));

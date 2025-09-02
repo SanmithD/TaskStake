@@ -78,8 +78,10 @@ function Profile() {
           </div>
         </div>
 
-        <div className="min-w-[160px] h-[90px] flex flex-col items-center justify-center bg-green-100 rounded-lg shadow-inner">
-          <p className="flex items-center gap-2 px-2 font-medium" ><Wallet/> Current Amount </p>
+        <div className="min-w-fit h-fit relative space-y-5 px-5 py-3 flex flex-col items-center justify-center bg-green-100 rounded-lg shadow-inner">
+          <p className="flex items-center gap-2 px-2 font-medium">
+            <Wallet /> Current Amount{" "}
+          </p>
           <p className="text-2xl md:text-3xl font-bold text-green-700 flex items-center gap-2">
             <DollarSign className="w-6 h-6" />
             {(auth?.amount?.[0]?.amount ?? 0).toLocaleString()}

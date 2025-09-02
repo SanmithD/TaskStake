@@ -138,24 +138,24 @@ function EditTask({ taskDetails }) {
             type="number"
             step="any"
             name="lat"
-            value={form.targetLocation?.lat}
+            value={form.targetLocation?.lat ?? ""}
             onChange={handleChange}
             placeholder="Latitude"
             disabled={form.type === "travel"}
             className={`w-full border px-3 py-2 rounded-lg ${
-              form.type === "travel" ? "bg-gray-100 cursor-not-allowed" : ""
+              form.type === "travel" ? "cursor-not-allowed" : ""
             }`}
           />
           <input
             type="number"
             step="any"
             name="lng"
-            value={form.targetLocation?.lng}
+            value={form.targetLocation?.lng ?? ""}
             onChange={handleChange}
             placeholder="Longitude"
             disabled={form.type === "travel"}
             className={`w-full border px-3 py-2 rounded-lg ${
-              form.type === "travel" ? "bg-gray-100 cursor-not-allowed" : ""
+              form.type === "travel" ? "cursor-not-allowed" : ""
             }`}
           />
           <input

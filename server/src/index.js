@@ -3,11 +3,14 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import 'dotenv/config';
 import express from 'express';
+import cron from "node-cron";
 import { dbConnect } from './config/db.config.js';
+import { autoFailExpiredTasks } from "./controllers/task.controller.js";
 import fundRouter from './routes/fund.route.js';
 import submissionRouter from './routes/submission.route.js';
 import taskRouter from './routes/task.route.js';
 import userRouter from './routes/user.route.js';
+
 
 dbConnect();
 const app = express();
@@ -20,6 +23,12 @@ app.use(cors({
 }));
 app.use(cookieParser());
 app.use(bodyParser.json());
+
+cron.schedule("0 * * * *", () => {
+  autoFailExpiredTasks({}, { 
+    status: () => ({ json: console.log }) 
+  });
+});
 
 app.use('/api/auth', userRouter);
 app.use('/api/task', taskRouter);
