@@ -21,8 +21,7 @@ const SubmissionSchema = new Schema({
     capturedAt: Date
   },
   photo: {
-    publicId: String,
-    url: String
+    type: String
   },
   file: {
     path: String,

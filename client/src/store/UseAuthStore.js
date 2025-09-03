@@ -116,9 +116,8 @@ export const UseAuthStore = create((set, get) => ({
   getSubmittedTask: async() =>{
     set({ isLoading: true });
     try {
-      const response = await axiosInstance.get("/submission/mine");
-      set({ isLoading: false, isAuthenticated: true});
-      console.log(response.data);
+      await axiosInstance.get("/submission/mine");
+      set({ isLoading: false});
       await get().profile();
       toast.success("Profile updated");
     } catch (error) {

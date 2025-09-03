@@ -1,6 +1,6 @@
 import { Calendar, Clock, MapPin } from "lucide-react";
 import { useEffect } from "react";
-import Controller from '../components/Controller';
+import Controller from "../components/Controller";
 import EditTask from "../components/EditTask";
 import { UseTaskStore } from "../store/UseTaskStore";
 
@@ -32,15 +32,11 @@ function Dashboard() {
                   {task.title}
                 </h2>
                 <span
-                  className={`px-3 py-1 text-sm rounded-full font-medium
-    ${
-      task.status === "pending"
-        ? "bg-yellow-100 text-yellow-700"
-        : task.status === "failed" || task.status === "cancelled"
-        ? "bg-red-400 text-white"
-        : "bg-green-100 text-green-700"
-    }`}
-                >
+                  className={`px-3 py-1 text-sm rounded-full font-medium ${
+                    task.status === "pending" ? "bg-yellow-100 text-yellow-700" 
+                    : task.status === "failed" || task.status === "cancelled"
+                    ? "bg-red-400 text-white"
+                    : "bg-green-100 text-green-700"}`}>
                   {task.status}
                 </span>
               </div>
@@ -81,7 +77,7 @@ function Dashboard() {
               <dialog id={`my_modal_${task._id}`} className="modal">
                 <div className="modal-box">
                   <EditTask taskDetails={task} />
-                  <Controller task={task}/>
+                  <Controller task={task} />
                 </div>
               </dialog>
             </div>

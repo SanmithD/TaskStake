@@ -1,4 +1,4 @@
-function haversineMeters(lat1, lon1, lat2, lon2) {
+export default function haversineMeters(lat1, lon1, lat2, lon2) {
   const toRad = d => d * Math.PI / 180;
   const R = 6371000; // meters
   const dLat = toRad(lat2 - lat1);
@@ -8,5 +8,3 @@ function haversineMeters(lat1, lon1, lat2, lon2) {
             Math.sin(dLon/2) ** 2;
   return 2 * R * Math.asin(Math.sqrt(a));
 }
-
-export default { haversineMeters };

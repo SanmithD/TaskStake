@@ -1,9 +1,11 @@
 import { DollarSign, Home, Menu, Puzzle, UserCircle2Icon, X } from "lucide-react";
-import { useState } from "react";
-import AddFunds from "../components/AddFunds";
-import Tasks from "../components/Tasks";
-import DashboardPage from "./Dashboard";
-import Profile from "./Profile";
+import { lazy, Suspense, useState } from "react";
+import Loader from "../components/Loader";
+
+const AddFunds = lazy(()=>import('../components/AddFunds'));
+const Tasks = lazy(()=>import('../components/Tasks'));
+const DashboardPage = lazy(()=>import('./Dashboard'));
+const Profile = lazy(()=>import('./Profile'));
 
 function MainLayout() {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -113,10 +115,12 @@ function MainLayout() {
             </button>
       </div>
       <div className="w-full p-6 overflow-y-auto flex justify-center">
+        <Suspense fallback={<Loader/>} >
         {activeTab === "dashboard" && <DashboardPage />}
         {activeTab === "funds" && <AddFunds />}
         {activeTab === "task" && <Tasks />}
         {activeTab === "profile" && <Profile />}
+        </Suspense>
       </div>
     </div>
   );

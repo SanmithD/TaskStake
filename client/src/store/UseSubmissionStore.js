@@ -6,6 +6,7 @@ import { UseTaskStore } from "./UseTaskStore";
 
 export const UseSubmissionStore = create((set) => ({
   isSubLoading: false,
+  allTasks: null,
 
   cancelTask: async (taskId) => {
     set({ isSubLoading: true });
@@ -41,8 +42,7 @@ export const UseSubmissionStore = create((set) => ({
     set({ isSubLoading: true });
     try {
       const response = await axiosInstance.get(`/submission/mine`);
-      set({ isSubLoading: false });
-      console.log(response.data);
+      set({ isSubLoading: false, allTasks: response.data.data });
     } catch (error) {
       const msg =
         error.response?.data?.msg || error.message || "Something went wrong";

@@ -9,7 +9,13 @@ const FundSchema = new Schema({
   amount: { 
     type: Number, 
     default: 0 
-  }
+  },
+  recentAdded: [
+      {
+        cash: { type: Number, required: true },
+        date: { type: Date, default: Date.now },
+      },
+    ],
 }, { timestamps: true });
 
 export const fundModel = model("Fund", FundSchema);

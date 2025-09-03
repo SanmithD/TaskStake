@@ -15,13 +15,24 @@ export const addFund = async (req, res) => {
 
     if (fund) {
       fund.amount += Number(amount);
+
+      fund.recentAdded.unshift({
+        cash: Number(amount),
+        date: new Date(),
+      });
+
+      if (fund.recentAdded.length > 20) {
+        fund.recentAdded = fund.recentAdded.slice(0, 20);
+      }
+
       await fund.save();
       return Response(200, true, "Funds updated successfully", res, fund);
     }
 
     fund = new fundModel({
       userId,
-      amount,
+      amount: Number(amount),
+      recentAdded: [{ cash: Number(amount), date: new Date() }],
     });
     await fund.save();
 
@@ -31,6 +42,7 @@ export const addFund = async (req, res) => {
     Response(500, false, "Server error", res);
   }
 };
+
 
 // GET USER FUNDS 
 export const getFunds = async (req, res) => {

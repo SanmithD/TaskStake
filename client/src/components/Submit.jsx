@@ -23,25 +23,27 @@ function Submit({ task }) {
     }
   }, [task?.type]);
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
-
-  const handlePhotoChange = (e) => {
-    setPhoto(e.target.files[0]);
-  };
+  const handleFileChange = (e) => setFile(e.target.files[0]);
+  const handlePhotoChange = (e) => setPhoto(e.target.files[0]);
 
   const handleSubmit = async () => {
-    const payload = {
-      kind: task?.type,
-      geo,
-      photo,
-      file,
-      ai: null,
-    };
+  const formData = new FormData();
+  formData.append("kind", task?.type);
 
-    await submitTask(task._id, payload);
-  };
+  if (geo) {
+    formData.append("geo", JSON.stringify(geo));
+  }
+  if (photo) {
+    formData.append("photo", photo); // This should be the File object
+  }
+  if (file) {
+    formData.append("file", file); // This should be the File object
+  }
+  formData.append("ai", ""); // Use empty string instead of null
+
+  await submitTask(task._id, formData);
+};
+
 
   return (
     <div className="bg-gray-900 text-white rounded-2xl shadow-lg p-6 w-full max-w-lg mx-auto border border-gray-700">

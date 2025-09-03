@@ -18,14 +18,14 @@ function Profile() {
   };
 
   return (
-    <div className="w-full px-6 md:px-12 py-6 space-y-6">
+    <div className="w-full md:px-12 space-y-6">
       <div>
         <h1 className="text-2xl md:text-3xl font-bold tracking-wide text-gray-800">
           Profile
         </h1>
       </div>
 
-      <div className="w-full flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-white rounded-xl shadow-md p-6">
+      <div className="w-full flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-white rounded-xl shadow-md md:p-6">
         <div className="space-y-2">
           <h2 className="text-xl md:text-2xl font-semibold text-gray-800">
             {auth?.profile?.name}
@@ -89,7 +89,7 @@ function Profile() {
           </p>
         </div>
       </div>
-      <div>
+      <div className="w-full mb-6" >
         <TaskList/>
       </div>
     </div>
