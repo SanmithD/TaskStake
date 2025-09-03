@@ -12,7 +12,7 @@ const TaskSchema = new Schema(
     },
     type: { 
       type: String, 
-      enum: ["travel", "general"], 
+      enum: ["travel", "general","personal","work"], 
       required: true 
     },
     targetLocation: {

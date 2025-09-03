@@ -2,12 +2,14 @@ import { fundModel } from "../models/fund.model.js";
 import { submissionModel } from "../models/submission.model.js";
 import { taskModel } from "../models/task.model.js";
 import haversineMeters from "../utils/geo.util.js";
-import withinWindow from "../utils/time.util.js";
+import { withinWindow } from "../utils/time.util.js";
 
 function applyFunds(amount, status) {
-  return status === "completed"
-    ? amount + amount * 0.05
-    : amount - amount * 0.10;
+  if (status === "completed") {
+    return { newAmount: amount + amount * 0.05, gainLoss: amount * 0.05 };
+  } else {
+    return { newAmount: amount - amount * 0.1, gainLoss: -(amount * 0.1) };
+  }
 }
 
 async function verifyAndSettle(subId) {
@@ -18,15 +20,24 @@ async function verifyAndSettle(subId) {
   let ok = false;
   let reason = "";
 
-  const inTime = withinWindow(new Date(sub.createdAt), task.startAt, task.endAt);
+  const inTime = withinWindow(
+    new Date(sub.createdAt),
+    task.startAt,
+    task.endAt
+  );
 
   if (task.type === "travel" && sub.kind === "travel") {
-    const dist = haversineMeters(sub.geo.lat, sub.geo.lng, task.targetLocation.lat, task.targetLocation.lng);
+    const dist = haversineMeters(
+      sub.geo.lat,
+      sub.geo.lng,
+      task.targetLocation.lat,
+      task.targetLocation.lng
+    );
     ok = inTime && dist <= (task.targetLocation.radiusMeters || 100);
     if (!ok) reason = `Too far (${Math.round(dist)}m)`;
-
   } else if (task.type === "general") {
-    const hasProof = !!(sub.photo && sub.photo.url) || !!(sub.file && sub.file.path);
+    const hasProof =
+      !!(sub.photo && sub.photo.url) || !!(sub.file && sub.file.path);
     ok = inTime && hasProof;
     if (!ok) reason = "No valid proof submitted";
 
@@ -34,7 +45,6 @@ async function verifyAndSettle(subId) {
       ok = false;
       reason = "Image seems manipulated";
     }
-
   } else {
     reason = "Invalid submission type";
   }
@@ -48,8 +58,12 @@ async function verifyAndSettle(subId) {
 
   const fund = await fundModel.findOne({ userId: task.userId });
   if (fund) {
-    fund.amount = applyFunds(fund.amount, taskStatus);
+    const { newAmount, gainLoss } = applyFunds(fund.amount, taskStatus);
+    fund.amount = newAmount;
     await fund.save();
+
+    sub.gainLoss = gainLoss;
+    await sub.save();
   }
 
   return { ok, reason };

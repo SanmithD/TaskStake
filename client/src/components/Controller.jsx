@@ -18,14 +18,14 @@ function Controller({ task }) {
         <button
           disabled={isSubLoading}
           className="btn bg-warning"
-          onClick={() => cancelTask(task)}
+          onClick={() => cancelTask(task._id)}
         >
           {isSubLoading ? "Canceling" : "Cancel"}
         </button>
         <button
           disabled={isLoading}
           className="btn bg-red-500"
-          onClick={() => deleteTask(task)}
+          onClick={() => deleteTask(task._id)}
         >
           {isLoading ? "Deleting" : "Delete"}
         </button>
@@ -34,7 +34,7 @@ function Controller({ task }) {
     </div>
     <dialog id={`my_modal_complete`} className="modal">
           <div className="modal-box">
-            <Submit/>
+            <Submit task={task}/>
             <div className="modal-action">
               <form method="dialog">
                 <button className="btn">Close</button>

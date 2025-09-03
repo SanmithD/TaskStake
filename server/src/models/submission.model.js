@@ -11,7 +11,7 @@ const SubmissionSchema = new Schema({
   },
   kind: { 
     type: String, 
-    enum: ["travel", "photo", "file"],
+    enum: ["travel", "photo", "file","general","work", "personal"],
     required: true 
   },
   geo: {
@@ -39,6 +39,7 @@ const SubmissionSchema = new Schema({
     enum: ["pending", "approved", "rejected"], 
     default: "pending" 
   },
+  gainLoss: Number,
   reason: String
 }, { timestamps: true });
 

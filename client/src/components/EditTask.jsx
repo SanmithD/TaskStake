@@ -84,7 +84,7 @@ function EditTask({ taskDetails }) {
           name="type"
           value={form.type}
           onChange={handleChange}
-          className="w-full border border-gray-300 px-4 py-2 rounded-lg"
+          className="w-full border border-gray-300 bg-[#1D232A] px-4 py-2 rounded-lg"
         >
           <option value="general">General</option>
           <option value="travel">Travel</option>
@@ -127,7 +127,8 @@ function EditTask({ taskDetails }) {
         </div>
       </div>
 
-      {/* Location */}
+      {
+        taskDetails.type === 'travel' && (
       <div className="space-y-2">
         <label className=" font-medium mb-1 flex items-center gap-2">
           <MapPin className="text-red-500" size={18} />
@@ -173,6 +174,8 @@ function EditTask({ taskDetails }) {
           </p>
         )}
       </div>
+        )
+      }
 
       <button
         type="submit"

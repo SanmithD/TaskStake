@@ -1,9 +1,8 @@
 import { Calendar, Clock, MapPin } from "lucide-react";
 import { useEffect } from "react";
-import EditTask from "../components/EditTask";
-import { UseSubmissionStore } from "../store/UseSubmissionStore";
-import { UseTaskStore } from "../store/UseTaskStore";
 import Controller from '../components/Controller';
+import EditTask from "../components/EditTask";
+import { UseTaskStore } from "../store/UseTaskStore";
 
 function Dashboard() {
   const { getAllTasks, allTasks } = UseTaskStore();
@@ -82,7 +81,7 @@ function Dashboard() {
               <dialog id={`my_modal_${task._id}`} className="modal">
                 <div className="modal-box">
                   <EditTask taskDetails={task} />
-                  <Controller task={task._id}/>
+                  <Controller task={task}/>
                 </div>
               </dialog>
             </div>

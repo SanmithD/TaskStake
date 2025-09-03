@@ -4,7 +4,7 @@ import { axiosInstance } from "../lib/axiosInstance";
 import { UseAuthStore } from "./UseAuthStore";
 import { UseTaskStore } from "./UseTaskStore";
 
-export const UseSubmissionStore = create((set, get) => ({
+export const UseSubmissionStore = create((set) => ({
   isSubLoading: false,
 
   cancelTask: async (taskId) => {
@@ -23,12 +23,26 @@ export const UseSubmissionStore = create((set, get) => ({
     }
   },
 
-  submitTask: async(data, taskId) =>{
+  submitTask: async(taskId, data) =>{
     set({ isSubLoading: true });
     try {
       await axiosInstance.post(`/submission/create/${taskId}`,data);
       set({ isSubLoading: false });
-      toast.success("Task cancelled");
+      toast.success("Task Submitted");
+    } catch (error) {
+      const msg =
+        error.response?.data?.msg || error.message || "Something went wrong";
+      toast.error(msg);
+      set({ isSubLoading: false })
+    }
+  },
+
+  getAllSubmissions: async() =>{
+    set({ isSubLoading: true });
+    try {
+      const response = await axiosInstance.get(`/submission/mine`);
+      set({ isSubLoading: false });
+      console.log(response.data);
     } catch (error) {
       const msg =
         error.response?.data?.msg || error.message || "Something went wrong";

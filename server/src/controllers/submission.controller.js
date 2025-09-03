@@ -8,10 +8,27 @@ export const createSubmission = async (req, res) => {
   const userId = req.user?._id;
   if (!userId) return Response(403, false, "Unauthorized", res);
 
-  const taskId = req.params;
-  const { kind, geo, photo, file, ai } = req.body;
+  const { taskId } = req.params;
+  const { kind, geo, ai } = req.body;
 
-  if (!taskId || !kind) 
+  const photoData = req.files?.photo?.[0]
+  ? {
+      publicId: req.files.photo[0].filename,
+      url: req.files.photo[0].path,
+    }
+  : null;
+
+const fileData = req.files?.file?.[0]
+  ? {
+      path: req.files.file[0].path,
+      originalName: req.files.file[0].originalname,
+      size: req.files.file[0].size,
+    }
+  : null;
+
+
+
+  if (!taskId || !kind)
     return Response(400, false, "Task ID and kind are required", res);
 
   try {
@@ -20,9 +37,9 @@ export const createSubmission = async (req, res) => {
       userId,
       kind,
       geo,
-      photo,
-      file,
-      ai
+      photo: photoData,
+      file: fileData,
+      ai,
     });
 
     await submission.save();

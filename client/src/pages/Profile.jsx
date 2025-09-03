@@ -2,6 +2,7 @@ import { DollarSign, Wallet } from "lucide-react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import EditProfile from "../components/EditProfile";
+import TaskList from "../components/TaskList";
 import { UseAuthStore } from "../store/UseAuthStore";
 
 function Profile() {
@@ -87,6 +88,9 @@ function Profile() {
             {(auth?.amount?.[0]?.amount ?? 0).toLocaleString()}
           </p>
         </div>
+      </div>
+      <div>
+        <TaskList/>
       </div>
     </div>
   );
