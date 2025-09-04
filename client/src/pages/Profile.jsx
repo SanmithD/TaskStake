@@ -7,7 +7,7 @@ import { UseAuthStore } from "../store/UseAuthStore";
 
 function Profile() {
   const navigate = useNavigate();
-  const { profile, auth, deleteAccount } = UseAuthStore();
+  const { profile, auth, deleteAccount, isLoading, logout } = UseAuthStore();
 
   useEffect(() => {
     profile();
@@ -16,6 +16,10 @@ function Profile() {
   const handleDelete = async () => {
     await deleteAccount(navigate);
   };
+
+  const handleLogout = async() =>{
+    await logout(navigate);
+  }
 
   return (
     <div className="w-full md:px-12 space-y-6">
@@ -70,7 +74,28 @@ function Profile() {
                   <form method="dialog" className="space-x-1">
                     <button className="btn">Close</button>
                     <button onClick={handleDelete} className="btn bg-red-500">
-                      Delete
+                      { isLoading ? "Deleting" : "Delete" }
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </dialog>
+            <button
+              className="btn bg-yellow-500 border-0"
+              onClick={() =>
+                document.getElementById("my_modal_logout").showModal()
+              }
+            >
+              Logout
+            </button>
+            <dialog id="my_modal_logout" className="modal">
+              <div className="modal-box">
+                <h3 className="font-bold text-lg text-white">Are sure!</h3>
+                <div className="modal-action">
+                  <form method="dialog" className="space-x-1">
+                    <button className="btn">Close</button>
+                    <button onClick={handleLogout} className="btn bg-yellow-500">
+                      { isLoading ? "Loading..." : "Logout" }
                     </button>
                   </form>
                 </div>

@@ -2,7 +2,7 @@ import toast from "react-hot-toast";
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axiosInstance";
 
-export const UseFundStore = create((set) => ({
+export const UseFundStore = create((set, get) => ({
   isLoading: false,
   funds: null,
 
@@ -11,6 +11,7 @@ export const UseFundStore = create((set) => ({
     try {
       await axiosInstance.post(`/fund/add`, {amount});
       set({ isLoading: false });
+      await get().getRecentFund();
       toast.success("Fund added")
     } catch (error) {
       console.log(error);

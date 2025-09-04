@@ -22,11 +22,11 @@ function Transition() {
   };
 
   return (
-    <div className="w-full max-w-lg mx-auto bg-white shadow-md rounded-xl p-6">
+    <div className="h-screen w-full max-w-lg mx-auto bg-white shadow-md rounded-xl p-6">
       <h2 className="text-xl font-bold mb-4 text-gray-800">💰 Recent Fund Activity</h2>
 
       {sortedRecent.length > 0 ? (
-        <ul className="space-y-3">
+        <ul className="space-y-3 h-screen md:h-[70%] overflow-y-scroll">
           {sortedRecent.map((item) => (
             <li
               key={item._id}

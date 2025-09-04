@@ -51,12 +51,13 @@ export const UseAuthStore = create((set, get) => ({
     }
   },
 
-  logout: async () => {
+  logout: async (navigate) => {
     set({ isLoading: true });
     try {
       await axiosInstance.post("/auth/logout");
       localStorage.removeItem("token");
       set({ isAuthenticated: false, auth: null, isLoading: false });
+      navigate('/login')
     } catch (error) {
       console.log(error);
       set({ isLoading: false });
