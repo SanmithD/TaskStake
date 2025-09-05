@@ -11,7 +11,6 @@ const MainLayout = lazy(() => import("./pages/MainLayout"));
 const DashboardPage = lazy(() => import("./pages/Dashboard"));
 const AddFunds = lazy(() => import("./components/AddFunds"));
 const Tasks = lazy(() => import("./components/Tasks"));
-// const Profile = lazy(() => import("./pages/Profile"));
 const Contact = lazy(() => import("./pages/Contact"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const Rules = lazy(() => import("./pages/Rules"));
@@ -25,7 +24,6 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
 
-          {/* Protected layout with sidebar */}
           <Route
             path="/"
             element={

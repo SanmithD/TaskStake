@@ -6,6 +6,7 @@ import express from 'express';
 import cron from "node-cron";
 import { dbConnect } from './config/db.config.js';
 import { autoFailExpiredTasks } from "./controllers/task.controller.js";
+import agentRouter from './routes/agent.route.js';
 import contactRouter from './routes/contact.route.js';
 import fundRouter from './routes/fund.route.js';
 import submissionRouter from './routes/submission.route.js';
@@ -36,6 +37,7 @@ app.use('/api/task', taskRouter);
 app.use('/api/fund', fundRouter);
 app.use('/api/submission', submissionRouter);
 app.use('/api/contact', contactRouter);
+app.use('/api/agent', agentRouter);
 
 app.listen(PORT, ()=>{
     console.log(`Server running on port ${PORT}`);

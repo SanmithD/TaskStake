@@ -86,7 +86,6 @@ export const createSubmission = async (req, res) => {
 
     await submission.save();
 
-    // Verify and settle the submission
     const result = await verifyService.verifyAndSettle(submission._id);
 
     Response(201, true, "Submission created and processed", res, { 

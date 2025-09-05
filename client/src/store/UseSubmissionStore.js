@@ -27,9 +27,10 @@ export const UseSubmissionStore = create((set) => ({
   submitTask: async(taskId, data) =>{
     set({ isSubLoading: true });
     try {
-      await axiosInstance.post(`/submission/create/${taskId}`,data);
+      const response = await axiosInstance.post(`/submission/create/${taskId}`,data);
       set({ isSubLoading: false });
       toast.success("Task Submitted");
+      console.log(response.data)
     } catch (error) {
       const msg =
         error.response?.data?.msg || error.message || "Something went wrong";
