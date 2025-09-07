@@ -1,55 +1,92 @@
-import { agent } from "../config/agent.config.js";
-import verifyAndSettle from "../config/verify.config.js";
-import { submissionModel } from "../models/submission.model.js";
+import { agent } from '../config/agent.config.js';
 
-export const runAgentOnSubmission = async (req, res) => {
+export default async function performAIVerification(submissionId, task) {
   try {
-    const { subId } = req.params;
-    const submission = await submissionModel.findById(subId);
+    const result = await agent.invoke({
+      messages: [
+        {
+          role: "system",
+          content: `You are a strict photo verification AI. Your job is to verify if a submitted photo is relevant and valid for the given task.
+          
+          Verification Criteria:
+          1. Photo must be relevant to the task title and description
+          2. Photo should be appropriate for the task's date/time context
+          3. Photo should show genuine effort to complete the task
+          4. Photo must not be obviously fake, stock image, or unrelated
+          
+          Respond with:
+          - "VALID" if the photo meets all criteria
+          - "INVALID" if the photo fails any criteria
+          
+          Always provide a brief reason for your decision.`
+        },
+        {
+          role: "user",
+          content: `Please verify this photo submission using the verify_image_against_task tool with submissionId: ${submissionId}`
+        }
+      ]
+    });
 
-    if (!submission) {
-      return res.status(404).json({ error: "Submission not found" });
-    }
-
-    if (submission.photo) {
-      const result = await agent.invoke({
-        messages: [
-          {
-            role: "system",
-            content: "You are a photo verification agent. Verify authenticity.",
-          },
-          {
-            role: "user",
-            content: `Verify if this photo is valid for task ${submission.taskId}`,
-          },
-          {
-            role: "user",
-            content: [
-              {
-                type: "image_url",
-                image_url: submission.photo
-              }
-            ]
-          }
-        ]
-      });
-
-      const responseText = result.output_text || "";
-      const isValid = /valid|ok|approved/i.test(responseText);
-
-      // Now update based on agent decision
-      const settlement = await verifyAndSettle(subId, isValid);
-
-      return res.json({
-        message: "Verification completed",
-        agentResponse: responseText,
-        settlement
-      });
+    // Parse AI response
+    let responseText = "";
+    if (result.messages && result.messages.length > 0) {
+      responseText = result.messages[result.messages.length - 1].content;
+    } else if (result.output) {
+      responseText = result.output;
     } else {
-      return res.status(400).json({ error: "No photo submitted for verification" });
+      responseText = String(result);
     }
+
+    const isValid = /VALID|valid|approved|accept/i.test(responseText) && 
+                   !/INVALID|invalid|reject|denied/i.test(responseText);
+
+    return {
+      ok: isValid,
+      reason: isValid 
+        ? "Photo verified by AI - matches task requirements" 
+        : `Photo rejected by AI: ${responseText}`
+    };
+
+      } catch (error) {
+    throw new Error(`AI verification failed: ${error.message}`);
+  }
+}
+
+
+export const verifyImageDetails = async (req, res) => {
+  const { subId } = req.params;
+  try {
+    const result = await agent.invoke({
+      messages: [
+        {
+          role: "system",
+          content: `You are a strict photo verification AI. Your job is to verify if a submitted photo is relevant and valid for the given task.
+          
+          Verification Criteria:
+          1. Photo must be relevant to the task title and description
+          2. Photo should be appropriate for the task's date/time context
+          3. Photo should show genuine effort to complete the task
+          4. Photo must not be obviously fake, stock image, or unrelated
+          
+          Respond with:
+          - "VALID" if the photo meets all criteria
+          - "INVALID" if the photo fails any criteria
+          
+          Always provide a brief reason for your decision.`
+        },
+        {
+  role: "user",
+  content: `Please verify this photo submission using the Analzy_image tool with subId: ${subId}`
+}
+
+      ]
+    });
+
+    console.log("Agent result:", result.content);
   } catch (error) {
-    console.error(error);
+    console.error("Verification error:", error);
     res.status(500).json({ error: "Server error" });
   }
 };
+
+

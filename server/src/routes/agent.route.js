@@ -1,9 +1,9 @@
 import express from "express";
-import { runAgentOnSubmission } from "../controllers/agent.controller.js";
-import { isAuthorized } from "../middlewares/administer.middleware.js";
+import { verifyImageDetails } from "../controllers/agent.controller.js";
 
 const agentRouter = express.Router();
 
-agentRouter.post("/verify/:subId", isAuthorized, runAgentOnSubmission);
+// agentRouter.post("/verify/:subId", isAuthorized, runAgentOnSubmission);
+agentRouter.post("/verify/:subId", verifyImageDetails);
 
 export default agentRouter;

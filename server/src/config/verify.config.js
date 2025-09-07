@@ -28,19 +28,26 @@ async function verifyAndSettle(subId) {
           messages: [
             {
               role: "system",
-              content: "You are a strict task verification AI. Review the task title, description, and date range. Check if the submitted photo is valid evidence for the task. Reply clearly with VALID if it matches, or INVALID if not."
+              content: `
+                You are a strict verification AI.
+                Compare the task title, description, and date range with the submitted photo.
+                Decide if the photo is valid evidence for the task.
+                Reply with ONLY one word: "VALID" or "INVALID".
+                No explanations.`,
             },
             {
               role: "user",
-              content: `Task Title: ${task.title || "N/A"}\nTask Description: ${task.description || "N/A"}\nTask Window: ${task.startAt} to ${task.endAt}\nSubmission Date: ${sub.createdAt}`
+              content: `Task Title: ${task.title || "N/A"}\nTask Description: ${
+                task.description || "N/A"
+              }\nTask Window: ${task.startAt} to ${
+                task.endAt
+              }\nSubmission Date: ${sub.createdAt}`,
             },
             {
               role: "user",
-              content: [
-                { type: "image_url", image_url: sub.photo }
-              ]
-            }
-          ]
+              content: [{ type: "image_url", image_url: sub.photo }],
+            },
+          ],
         });
 
         let responseText = "";
@@ -52,25 +59,32 @@ async function verifyAndSettle(subId) {
           responseText = result.message;
         } else if (result.text) {
           responseText = result.text;
-        } else if (typeof result === 'string') {
+        } else if (typeof result === "string") {
           responseText = result;
         } else if (result.choices && result.choices[0]) {
-          responseText = result.choices[0].message?.content || result.choices[0].text || "";
+          responseText =
+            result.choices[0].message?.content || result.choices[0].text || "";
         }
 
         if (!responseText) {
           ok = false;
           reason = "AI verification failed - no response";
         } else {
-          ok = /valid|ok|approved/i.test(responseText);
-          reason = ok ? "Photo verified by AI agent against task details" : `Photo does not match task requirements: ${responseText}`;
+          ok = ok = /^\s*valid\s*$/i.test(responseText.trim());
+          reason = ok
+            ? "Photo verified by AI agent against task details"
+            : `Photo does not match task requirements: ${responseText}`;
         }
       } catch (aiError) {
         ok = false;
         reason = `AI verification error: ${aiError.message}`;
       }
     } else if (task.type === "travel" && sub.kind === "travel") {
-      const inTime = withinWindow(new Date(sub.createdAt), task.startAt, task.endAt);
+      const inTime = withinWindow(
+        new Date(sub.createdAt),
+        task.startAt,
+        task.endAt
+      );
       if (!inTime) {
         ok = false;
         reason = "Submission outside time window";
@@ -101,7 +115,7 @@ async function verifyAndSettle(subId) {
 
     const updateData = {
       status: ok ? "approved" : "rejected",
-      reason: reason
+      reason: reason,
     };
 
     await submissionModel.findByIdAndUpdate(subId, updateData, { new: true });
@@ -112,7 +126,10 @@ async function verifyAndSettle(subId) {
 
     const fund = await fundModel.findOne({ userId: task.userId });
     if (fund) {
-      const { newAmount, gainLoss } = applyFunds(task.amount || fund.amount, taskStatus);
+      const { newAmount, gainLoss } = applyFunds(
+        task.amount || fund.amount,
+        taskStatus
+      );
       fund.amount = newAmount;
       await fund.save();
       await submissionModel.findByIdAndUpdate(subId, { gainLoss });
