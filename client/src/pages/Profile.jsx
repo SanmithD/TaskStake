@@ -1,13 +1,16 @@
 import { DollarSign, Wallet } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import EditProfile from "../components/EditProfile";
 import TaskList from "../components/TaskList";
 import { UseAuthStore } from "../store/UseAuthStore";
+import { UseFundStore } from "../store/UseFundStore";
 
 function Profile() {
   const navigate = useNavigate();
+  const [wdAmount, setWdAmount] = useState("");
   const { profile, auth, deleteAccount, isLoading, logout } = UseAuthStore();
+  const { isFundLoading, withdrawAmount } = UseFundStore();
 
   useEffect(() => {
     if (!auth) {
@@ -23,8 +26,17 @@ function Profile() {
     await logout(navigate);
   };
 
-  if (isLoading) return <div>Loading...</div>
+  const handleWithdraw = async () => {
+    if (!wdAmount || Number(wdAmount) <= 0) {
+      alert("Please enter a valid amount");
+      return;
+    }
+    await withdrawAmount(Number(wdAmount));
+    setWdAmount(""); 
+    document.getElementById("my_modal_withdraw").close();
+  };
 
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <div className="w-full md:px-12 space-y-6">
@@ -64,6 +76,7 @@ function Profile() {
                 </div>
               </div>
             </dialog>
+
             <button
               className="btn bg-red-500 border-0"
               onClick={() =>
@@ -85,6 +98,7 @@ function Profile() {
                 </div>
               </div>
             </dialog>
+
             <button
               className="btn bg-yellow-500 border-0"
               onClick={() =>
@@ -112,19 +126,55 @@ function Profile() {
           </div>
         </div>
 
-        <div className="min-w-fit h-fit relative space-y-5 px-5 py-3 flex flex-col items-center justify-center bg-green-100 rounded-lg shadow-inner">
-          <p className="flex items-center gap-2 px-2 font-medium">
-            <Wallet /> Current Amount{" "}
-          </p>
-          <p className="text-2xl md:text-3xl font-bold text-green-700 flex items-center gap-2">
-            <DollarSign className="w-6 h-6" />
-            {(auth?.amount?.[0]?.amount ?? 0).toLocaleString()}
-          </p>
+        <div className="min-w-fit h-fit relative space-y-2 flex flex-col items-center justify-center shadow-inner">
+          <div className="w-full h-full bg-green-100 px-5 py-3 rounded-lg space-y-3">
+            <p className="flex items-center gap-2 px-2 font-medium">
+              <Wallet /> Current Amount{" "}
+            </p>
+            <p className="text-2xl md:text-3xl font-bold text-green-700 flex items-center gap-2">
+              <DollarSign className="w-6 h-6" />
+              {(auth?.amount?.[0]?.amount ?? 0).toLocaleString()}
+            </p>
+          </div>
+          <button
+            onClick={() =>
+              document.getElementById("my_modal_withdraw").showModal()
+            }
+            className="btn border-0 px-4 py-1.5 bg-green-300 rounded-lg text-2xl shadow-inner text-black font-medium"
+          >
+            Withdraw
+          </button>
         </div>
       </div>
+
       <div className="w-full mb-6">
         <TaskList />
       </div>
+
+      <dialog id="my_modal_withdraw" className="modal text-white">
+        <div className="modal-box space-y-2 ">
+          <p className="text-2xl font-medium">Amount</p>
+          <input
+            type="number"
+            className="w-full py-2 pl-2 outline-0 border-1 rounded-md"
+            placeholder="Enter amount"
+            value={wdAmount}
+            onChange={(e) => setWdAmount(e.target.value)}
+          />
+          <div className="modal-action">
+            <button
+              className="btn bg-green-500"
+              onClick={handleWithdraw}
+              disabled={isFundLoading}
+            >
+              {isFundLoading ? "Loading..." : "Withdraw"}
+            </button>
+            <button className="btn" onClick={() => document.getElementById("my_modal_withdraw").close()}>
+              Close
+            </button>
+          </div>
+        </div>
+      </dialog>
     </div>
   );
 }

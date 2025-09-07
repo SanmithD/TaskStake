@@ -1,7 +1,6 @@
 import { fundModel } from "../models/fund.model.js";
 import { Response } from "../utils/Response.util.js";
 
-// ADD FUNDS
 export const addFund = async (req, res) => {
   const userId = req.user?._id;
   if (!userId) return Response(403, false, "Unauthorized", res);
@@ -43,8 +42,6 @@ export const addFund = async (req, res) => {
   }
 };
 
-
-// GET USER FUNDS 
 export const getFunds = async (req, res) => {
   try {
     const fund = await fundModel.findOne({ userId: req.user._id });
@@ -56,24 +53,6 @@ export const getFunds = async (req, res) => {
     Response(500, false, "Server error", res);
   }
 };
-
-// RESET FUNDS 
-// export const resetFunds = async (req, res) => {
-//   try {
-//     const fund = await fundModel.findOneAndUpdate(
-//       { userId: req.user._id },
-//       { amount: 0 },
-//       { new: true }
-//     );
-
-//     if (!fund) return Response(404, false, "Funds not found", res);
-
-//     Response(200, true, "Funds reset to 0", res, fund);
-//   } catch (error) {
-//     console.log(error);
-//     Response(500, false, "Server error", res);
-//   }
-// };
 
 export const withdrawFund = async (req, res) => {
   const userId = req.user?._id;
@@ -90,7 +69,12 @@ export const withdrawFund = async (req, res) => {
     if (fund.amount < amount)
       return Response(400, false, "Insufficient balance", res);
 
+    // Deduct balance
     fund.amount -= amount;
+
+    // Save withdrawal history
+    fund.recentWithdrawals.push({ cash: amount });
+
     await fund.save();
 
     Response(200, true, "Withdrawal successful", res, { balance: fund.amount });
@@ -99,3 +83,17 @@ export const withdrawFund = async (req, res) => {
     Response(500, false, "Server error", res);
   }
 };
+
+export const getWithdrawHistory = async(req, res) =>{
+  const userId = req.user?._id;
+  if(!userId) return Response(403, false, "Unauthorized", res);
+  try {
+    const response = await fundModel.find({ userId }).select("recentWithdrawals");
+    if(!response) return Response(404, false, "Not found", res);
+
+    Response(200, true, "Recent withdraw", res, response);
+  } catch (error) {
+    console.log(error);
+    Response(500, false, "Server Error", res);
+  }
+}
