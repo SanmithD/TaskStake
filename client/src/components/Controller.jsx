@@ -10,7 +10,6 @@ function Controller({ task }) {
 
   return (
     <div>
-      {/* Action buttons */}
       <div className="modal-action w-full">
         <form method="dialog" className="w-full flex flex-wrap gap-3 justify-between">
           {task.status !== "completed" && (
@@ -46,13 +45,12 @@ function Controller({ task }) {
         </form>
       </div>
 
-      {/* Submit Modal */}
       {isSubmit && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="relative bg-white rounded-xl shadow-lg w-full max-w-lg p-6">
+          <div className="relative rounded-xl shadow-lg w-full max-w-lg p-6">
             <button
               onClick={() => setIsSubmit(false)}
-              className="btn btn-sm absolute top-3 right-3 bg-gray-200 hover:bg-gray-300"
+              className="btn btn-sm absolute top-3 right-3 hover:bg-gray-300"
             >
               ✕
             </button>

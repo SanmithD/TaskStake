@@ -1,8 +1,9 @@
+import cloudinary from "../config/cloudinary.config.js";
 import { fundModel } from "../models/fund.model.js";
+import { submissionModel } from "../models/submission.model.js";
 import { taskModel } from "../models/task.model.js";
 import { Response } from "../utils/Response.util.js";
 
-// ADD TASK
 export const addTask = async (req, res) => {
   const userId = req.user?._id;
   if (!userId) return Response(403, false, "Unauthorized", res);
@@ -38,8 +39,6 @@ export const addTask = async (req, res) => {
   }
 };
 
-
-// GET ALL TASKS 
 export const getMyTasks = async (req, res) => {
   try {
     const tasks = await taskModel.find({ userId: req.user._id }).sort({ createdAt: -1 });
@@ -52,7 +51,6 @@ export const getMyTasks = async (req, res) => {
   }
 };
 
-// GET SINGLE TASK 
 export const getTaskById = async (req, res) => {
   try {
     const task = await taskModel.findOne({
@@ -68,7 +66,6 @@ export const getTaskById = async (req, res) => {
   }
 };
 
-// UPDATE TASK 
 export const updateTask = async (req, res) => {
   try {
     const task = await taskModel.findOneAndUpdate(
@@ -85,7 +82,6 @@ export const updateTask = async (req, res) => {
   }
 };
 
-// DELETE TASK 
 export const deleteTask = async (req, res) => {
   try {
     const task = await taskModel.findOneAndDelete({
@@ -94,14 +90,29 @@ export const deleteTask = async (req, res) => {
     });
     if (!task) return Response(404, false, "Task not found", res);
 
-    Response(200, true, "Task deleted", res);
+    const submissions = await submissionModel.find({ taskId: task._id });
+
+    for (const sub of submissions) {
+      if (sub.photo?.publicId) {
+        try {
+          await cloudinary.uploader.destroy(sub.photo.publicId);
+          console.log(`Deleted photo ${sub.photo.publicId} from Cloudinary`);
+        } catch (err) {
+          console.error(`Error deleting Cloudinary image:`, err);
+        }
+      }
+    }
+
+    await submissionModel.deleteMany({ taskId: task._id });
+
+    Response(200, true, "Task and related submissions deleted", res);
   } catch (error) {
     console.log(error);
     Response(500, false, "Server error", res);
   }
 };
 
-// UPDATE STATUS ONLY 
+
 export const updateTaskStatus = async (req, res) => {
   const { status } = req.body;
   if (!["pending", "completed", "failed"].includes(status))

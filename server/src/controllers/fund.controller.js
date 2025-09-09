@@ -69,10 +69,8 @@ export const withdrawFund = async (req, res) => {
     if (fund.amount < amount)
       return Response(400, false, "Insufficient balance", res);
 
-    // Deduct balance
     fund.amount -= amount;
 
-    // Save withdrawal history
     fund.recentWithdrawals.push({ cash: amount });
 
     await fund.save();

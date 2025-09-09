@@ -1,6 +1,5 @@
 import bcrypt from "bcrypt";
 import { OAuth2Client } from 'google-auth-library';
-import { fundModel } from "../models/fund.model.js";
 import { taskModel } from "../models/task.model.js";
 import { userModel } from "../models/user.model.js";
 import { Response } from "../utils/Response.util.js";
@@ -61,13 +60,11 @@ export const getProfile = async (req, res) => {
   try {
     const user = await userModel.findById(req.user._id).select("-password");
     const userTask = await taskModel.find({userId: req.user._id}).sort({ createdAt: -1 });
-    const userCapital = await fundModel.find({userId: req.user._id}).sort({ createdAt: -1 });
     if (!user) return Response(404, false, "User not found", res);
 
     const data = {
       profile: user,
       task: userTask,
-      amount: userCapital
     }
     Response(200, true, "User profile", res, data);
   } catch (error) {
@@ -91,7 +88,7 @@ export const deleteAccount = async (req, res) => {
 
 export const logout = async (req, res) => {
   try {
-    res.clearCookie("jwt");
+    res.clearCookie("token");
     Response(200, true, "Logged out", res);
   } catch (error) {
     console.log(error);

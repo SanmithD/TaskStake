@@ -31,7 +31,6 @@ function Contact() {
       >
         <h2 className="text-2xl font-semibold text-gray-800">Contact Us</h2>
 
-        {/* Subject */}
         <div>
           <label className="block text-gray-700 font-medium mb-1">
             Subject
@@ -47,7 +46,6 @@ function Contact() {
           />
         </div>
 
-        {/* Message */}
         <div>
           <label className="block text-gray-700 font-medium mb-1">
             Message
@@ -63,7 +61,6 @@ function Contact() {
           ></textarea>
         </div>
 
-        {/* Submit button */}
         <button
           type="submit"
           disabled={isLoading}

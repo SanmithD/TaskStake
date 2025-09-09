@@ -41,16 +41,19 @@ function EditTask({ taskDetails }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await updateTask(form,taskDetails._id);
-    if(form.type === 'travel'){
-        await updateTask({
+    await updateTask(form, taskDetails._id);
+    if (form.type === "travel") {
+      await updateTask(
+        {
           ...form,
           targetLocation: {
             lat: parseFloat(form.targetLocation.lat),
             lng: parseFloat(form.targetLocation.lng),
             radiusMeters: parseInt(form.targetLocation.radiusMeters, 10),
           },
-        },taskDetails._id);
+        },
+        taskDetails._id
+      );
     }
   };
 
@@ -62,9 +65,7 @@ function EditTask({ taskDetails }) {
       </div>
 
       <div>
-        <label className="block  font-medium mb-1">
-          Task Title
-        </label>
+        <label className="block  font-medium mb-1">Task Title</label>
         <input
           type="text"
           name="title"
@@ -75,11 +76,8 @@ function EditTask({ taskDetails }) {
         />
       </div>
 
-      {/* Type */}
       <div>
-        <label className="block  font-medium mb-1">
-          Task Type
-        </label>
+        <label className="block  font-medium mb-1">Task Type</label>
         <select
           name="type"
           value={form.type}
@@ -93,12 +91,9 @@ function EditTask({ taskDetails }) {
         </select>
       </div>
 
-      {/* Dates */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block  font-medium mb-1">
-            Start Date & Time
-          </label>
+          <label className="block  font-medium mb-1">Start Date & Time</label>
           <div className="flex items-center border border-gray-300 rounded-lg px-3">
             <Calendar className="text-gray-500 mr-2" size={18} />
             <input
@@ -111,9 +106,7 @@ function EditTask({ taskDetails }) {
           </div>
         </div>
         <div>
-          <label className="block  font-medium mb-1">
-            End Date & Time
-          </label>
+          <label className="block  font-medium mb-1">End Date & Time</label>
           <div className="flex items-center border border-gray-300 rounded-lg px-3">
             <Calendar className="text-gray-500 mr-2" size={18} />
             <input
@@ -127,55 +120,53 @@ function EditTask({ taskDetails }) {
         </div>
       </div>
 
-      {
-        taskDetails.type === 'travel' && (
-      <div className="space-y-2">
-        <label className=" font-medium mb-1 flex items-center gap-2">
-          <MapPin className="text-red-500" size={18} />
-          Task Location
-        </label>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <input
-            type="number"
-            step="any"
-            name="lat"
-            value={form.targetLocation?.lat ?? ""}
-            onChange={handleChange}
-            placeholder="Latitude"
-            disabled={form.type === "travel"}
-            className={`w-full border px-3 py-2 rounded-lg ${
-              form.type === "travel" ? "cursor-not-allowed" : ""
-            }`}
-          />
-          <input
-            type="number"
-            step="any"
-            name="lng"
-            value={form.targetLocation?.lng ?? ""}
-            onChange={handleChange}
-            placeholder="Longitude"
-            disabled={form.type === "travel"}
-            className={`w-full border px-3 py-2 rounded-lg ${
-              form.type === "travel" ? "cursor-not-allowed" : ""
-            }`}
-          />
-          <input
-            type="number"
-            name="radiusMeters"
-            value={form.targetLocation?.radiusMeters}
-            onChange={handleChange}
-            placeholder="Radius (m)"
-            className="w-full border px-3 py-2 rounded-lg"
-          />
+      {taskDetails.type === "travel" && (
+        <div className="space-y-2">
+          <label className=" font-medium mb-1 flex items-center gap-2">
+            <MapPin className="text-red-500" size={18} />
+            Task Location
+          </label>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <input
+              type="number"
+              step="any"
+              name="lat"
+              value={form.targetLocation?.lat ?? ""}
+              onChange={handleChange}
+              placeholder="Latitude"
+              disabled={form.type === "travel"}
+              className={`w-full border px-3 py-2 rounded-lg ${
+                form.type === "travel" ? "cursor-not-allowed" : ""
+              }`}
+            />
+            <input
+              type="number"
+              step="any"
+              name="lng"
+              value={form.targetLocation?.lng ?? ""}
+              onChange={handleChange}
+              placeholder="Longitude"
+              disabled={form.type === "travel"}
+              className={`w-full border px-3 py-2 rounded-lg ${
+                form.type === "travel" ? "cursor-not-allowed" : ""
+              }`}
+            />
+            <input
+              type="number"
+              name="radiusMeters"
+              value={form.targetLocation?.radiusMeters}
+              onChange={handleChange}
+              placeholder="Radius (m)"
+              className="w-full border px-3 py-2 rounded-lg"
+            />
+          </div>
+          {form.type === "travel" && (
+            <p className="text-sm text-gray-500">
+              Location auto-detected from your device.
+            </p>
+          )}
         </div>
-        {form.type === "travel" && (
-          <p className="text-sm text-gray-500">
-            Location auto-detected from your device.
-          </p>
-        )}
-      </div>
-        )
-      }
+      )}
 
       <button
         type="submit"

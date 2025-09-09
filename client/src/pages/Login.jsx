@@ -1,6 +1,7 @@
 import { Eye, EyeOff } from 'lucide-react';
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import GoogleLogin from '../components/GoogleLogin';
 import { UseAuthStore } from '../store/UseAuthStore';
 
 function Login() {
@@ -26,7 +27,7 @@ function Login() {
 
   return (
     <div className="h-screen w-full flex justify-center items-center bg-gradient-to-br from-blue-50 to-blue-100">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl px-8 py-3">
         <div className="flex flex-col items-center space-y-2 mb-6">
           <img src="TaskStakeImg.png" alt="logo" className="h-40 w-full"  />
           <p className="text-gray-600 text-lg">Growth pays off. Welcome Back👋</p>
@@ -78,6 +79,11 @@ function Login() {
         <p className="text-center text-sm text-gray-500 mt-6">
           Create account <a href="/signup" className="text-blue-600 hover:underline">Signup</a>
         </p>
+        <div>
+          <GoogleLogin 
+          variant="standard"
+        />
+        </div>
       </div>
     </div>
   );

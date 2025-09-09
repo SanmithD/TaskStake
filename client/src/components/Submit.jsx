@@ -27,23 +27,22 @@ function Submit({ task }) {
   const handlePhotoChange = (e) => setPhoto(e.target.files[0]);
 
   const handleSubmit = async () => {
-  const formData = new FormData();
-  formData.append("kind", task?.type);
+    const formData = new FormData();
+    formData.append("kind", task?.type);
 
-  if (geo) {
-    formData.append("geo", JSON.stringify(geo));
-  }
-  if (photo) {
-    formData.append("photo", photo); // This should be the File object
-  }
-  if (file) {
-    formData.append("file", file); // This should be the File object
-  }
-  formData.append("ai", ""); // Use empty string instead of null
+    if (geo) {
+      formData.append("geo", JSON.stringify(geo));
+    }
+    if (photo) {
+      formData.append("photo", photo);
+    }
+    if (file) {
+      formData.append("file", file);
+    }
+    formData.append("ai", "");
 
-  await submitTask(task._id, formData);
-};
-
+    await submitTask(task._id, formData);
+  };
 
   return (
     <div className="bg-gray-900 text-white rounded-2xl shadow-lg p-6 w-full max-w-lg mx-auto border border-gray-700">
@@ -69,7 +68,9 @@ function Submit({ task }) {
       {task.type === "general" && (
         <div className="flex flex-col gap-4 mb-6">
           <div>
-            <label className="block text-sm font-medium mb-1">Upload Photo</label>
+            <label className="block text-sm font-medium mb-1">
+              Upload Photo
+            </label>
             <input
               type="file"
               accept="image/*"
@@ -84,7 +85,9 @@ function Submit({ task }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Upload File</label>
+            <label className="block text-sm font-medium mb-1">
+              Upload File
+            </label>
             <input
               type="file"
               onChange={handleFileChange}

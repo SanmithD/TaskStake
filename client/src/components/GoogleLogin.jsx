@@ -1,7 +1,8 @@
+// GoogleLogin.jsx
 import axios from "axios";
 import { useEffect, useRef } from "react";
 
-function GoogleLogin({ onLogin }) {
+const GoogleLogin = ({ onLogin, variant = "standard" }) => {
   const googleButtonRef = useRef(null);
   const isInitialized = useRef(false);
 
@@ -23,9 +24,10 @@ function GoogleLogin({ onLogin }) {
             { 
               theme: "outline", 
               size: "large",
-              type: "standard",
+              type: variant,
               shape: "rectangular",
-              logo_alignment: "left"
+              logo_alignment: "left",
+              width: variant === "icon" ? 50 : 250
             }
           );
         }
@@ -61,6 +63,8 @@ function GoogleLogin({ onLogin }) {
     if (!window.google) {
       const script = document.createElement('script');
       script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
       script.onload = initializeGoogle;
       document.head.appendChild(script);
     } else {
@@ -73,9 +77,16 @@ function GoogleLogin({ onLogin }) {
         window.google.accounts.id.cancel();
       }
     };
-  }, [onLogin]);
+  }, [onLogin, variant]);
 
-  return <div ref={googleButtonRef} id="googleBtn"></div>;
-}
+  return (
+    <div className="google-login-container">
+      <div ref={googleButtonRef} className="google-login-button"></div>
+      <div className="divider">
+        <span>OR</span>
+      </div>
+    </div>
+  );
+};
 
 export default GoogleLogin;

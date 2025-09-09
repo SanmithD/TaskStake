@@ -6,7 +6,7 @@ import { UseAuthStore } from "../store/UseAuthStore";
 
 function Signup() {
   const navigate = useNavigate();
-  const { auth, signup, isLoading } = UseAuthStore();
+  const { signup, isLoading } = UseAuthStore();
   const [isVisible, setIsVisible] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -29,7 +29,7 @@ function Signup() {
 
   return (
     <div className="h-screen w-full flex justify-center items-center bg-gradient-to-br from-blue-50 to-blue-100">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl px-8 py-3">
         <div className="flex flex-col items-center mb-6">
           <img src="TaskStakeImg.png" alt="logo" className="h-40 w-full"  />
           <p className="text-gray-600 text-lg">Growth pays off. Welcome 👋</p>
@@ -103,7 +103,9 @@ function Signup() {
           </a>
         </p>
         <div>
-          <GoogleLogin onLogin={auth}/>
+          <GoogleLogin 
+          variant="standard"
+        />
         </div>
       </div>
     </div>

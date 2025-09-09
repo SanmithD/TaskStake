@@ -6,6 +6,7 @@ import { UseAuthStore } from "./UseAuthStore";
 export const UseFundStore = create((set, get) => ({
   isLoading: false,
   funds: null,
+  capital: null,
   withdraw: null,
   isFundLoading: false,
 
@@ -48,7 +49,6 @@ export const UseFundStore = create((set, get) => ({
     try {
       const response = await axiosInstance.get(`/fund/history`);
       set({ isLoading: false, withdraw: response.data.data });
-      console.log(response.data)
     } catch (error) {
       console.log(error);
       if (error.response) {
@@ -67,6 +67,22 @@ export const UseFundStore = create((set, get) => ({
       set({ isFundLoading: false });
       await get().getWithdrawFund();
       await UseAuthStore.getState().profile();
+    } catch (error) {
+      console.log(error);
+      if (error.response) {
+        const msg = error.response.data?.msg || "Fund failed";
+        toast.error(msg);
+      }
+      set({ isFundLoading: false });
+      throw error;
+    }
+  },
+
+  getFund: async() =>{
+    set({ isFundLoading: true });
+    try {
+      const response = await axiosInstance.get(`/fund/get`);
+      set({ isFundLoading: false, capital: response.data.data.amount });
     } catch (error) {
       console.log(error);
       if (error.response) {

@@ -43,7 +43,6 @@ function MainLayout() {
 
   return (
     <div className="h-screen mx-4 text-black flex">
-      {/* Mobile sidebar */}
       <div
         className={`${mobileView ? "border-r" : "border-0"} ${
           mobileView ? "w-full" : "w-0"
@@ -63,13 +62,11 @@ function MainLayout() {
         {mobileView ? <div>{navItems.map(renderNavButton)}</div> : null}
       </div>
 
-      {/* Desktop sidebar */}
       <div className="hidden md:block border-r w-80 pr-4 py-6 space-y-4">
         <img src="TaskStakeImg.png" alt="logo" className="h-20 w-full" />
         {navItems.map(renderNavButton)}
       </div>
 
-      {/* Content */}
       <div className="w-full p-6 overflow-y-auto flex justify-center">
         <Outlet />
       </div>

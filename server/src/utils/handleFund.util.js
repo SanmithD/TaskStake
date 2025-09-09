@@ -1,3 +1,7 @@
+import { applyFunds } from "../config/verify.config.js";
+import { fundModel } from "../models/fund.model.js";
+import { submissionModel } from "../models/submission.model.js";
+
 export default async function handleFundSettlement(task, taskStatus, submissionId) {
   try {
     const fund = await fundModel.findOne({ userId: task.userId });

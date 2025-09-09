@@ -1,4 +1,4 @@
-import { DollarSign, Wallet } from "lucide-react";
+import { Wallet } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import EditProfile from "../components/EditProfile";
@@ -10,13 +10,24 @@ function Profile() {
   const navigate = useNavigate();
   const [wdAmount, setWdAmount] = useState("");
   const { profile, auth, deleteAccount, isLoading, logout } = UseAuthStore();
-  const { isFundLoading, withdrawAmount } = UseFundStore();
+  const { isFundLoading, withdrawAmount, capital, getFund } = UseFundStore();
 
   useEffect(() => {
     if (!auth) {
       profile();
     }
   }, []);
+
+  useEffect(() => {
+    if (auth) {
+      getFund();
+    }
+  }, []);
+
+  const formatted = capital?.toLocaleString("en-IN", {
+    style: "currency",
+    currency: "INR",
+  });
 
   const handleDelete = async () => {
     await deleteAccount(navigate);
@@ -32,7 +43,7 @@ function Profile() {
       return;
     }
     await withdrawAmount(Number(wdAmount));
-    setWdAmount(""); 
+    setWdAmount("");
     document.getElementById("my_modal_withdraw").close();
   };
 
@@ -131,9 +142,8 @@ function Profile() {
             <p className="flex items-center gap-2 px-2 font-medium">
               <Wallet /> Current Amount{" "}
             </p>
-            <p className="text-2xl md:text-3xl font-bold text-green-700 flex items-center gap-2">
-              <DollarSign className="w-6 h-6" />
-              {(auth?.amount?.[0]?.amount ?? 0).toLocaleString()}
+            <p className="text-2xl md:text-3xl font-bold text-green-700 flex justify-center items-center gap-2">
+              {formatted}
             </p>
           </div>
           <button
@@ -169,7 +179,12 @@ function Profile() {
             >
               {isFundLoading ? "Loading..." : "Withdraw"}
             </button>
-            <button className="btn" onClick={() => document.getElementById("my_modal_withdraw").close()}>
+            <button
+              className="btn"
+              onClick={() =>
+                document.getElementById("my_modal_withdraw").close()
+              }
+            >
               Close
             </button>
           </div>

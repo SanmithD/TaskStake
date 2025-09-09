@@ -7,7 +7,6 @@ import { Response } from "../utils/Response.util.js";
 import handleFundSettlement from "../utils/handleFund.util.js";
 import performAIVerification from "./agent.controller.js";
 
-// controllers/submission.controller.js
 export const createSubmission = async (req, res) => {
   const userId = req.user?._id;
   if (!userId) return Response(403, false, "Unauthorized", res);
@@ -21,18 +20,15 @@ export const createSubmission = async (req, res) => {
   }
 
   try {
-    // Verify task exists and is active
     const task = await taskModel.findById(taskId);
     if (!task) return Response(404, false, "Task not found", res);
     if (task.status !== "pending") return Response(400, false, "Task is not active", res);
 
-    // Check existing submission
     const existingSubmission = await submissionModel.findOne({ taskId, userId });
     if (existingSubmission) {
       return Response(400, false, "You have already submitted for this task", res);
     }
 
-    // Handle photo upload to Cloudinary
     let photoData = null;
     if (photoFile) {
       try {
@@ -40,7 +36,10 @@ export const createSubmission = async (req, res) => {
           folder: "TaskStake",
           resource_type: "auto"
         });
-        photoData = uploadImage.secure_url;
+        photoData = {
+      url: uploadImage.secure_url,
+      publicId: uploadImage.public_id,  
+    };
         fs.unlinkSync(photoFile.path);
       } catch (cloudinaryError) {
         console.error("Cloudinary upload error:", cloudinaryError);
@@ -48,7 +47,6 @@ export const createSubmission = async (req, res) => {
       }
     }
 
-    // Parse geo data
     let geoData = null;
     if (geo) {
       try {
@@ -58,7 +56,6 @@ export const createSubmission = async (req, res) => {
       }
     }
 
-    // Create submission
     const submission = new submissionModel({
       taskId,
       userId,
@@ -75,7 +72,6 @@ export const createSubmission = async (req, res) => {
 
     await submission.save();
 
-    // AI Verification for photo submissions
     let verificationResult = { ok: true, reason: "No verification needed" };
     
     if (kind === "photo" && photoData) {
@@ -90,18 +86,15 @@ export const createSubmission = async (req, res) => {
       }
     }
 
-    // Update submission status based on AI verification
     const finalStatus = verificationResult.ok ? "approved" : "rejected";
     await submissionModel.findByIdAndUpdate(submission._id, {
       status: finalStatus,
       reason: verificationResult.reason
     });
 
-    // Update task status
     const taskStatus = verificationResult.ok ? "completed" : "failed";
     await taskModel.updateOne({ _id: task._id }, { status: taskStatus });
 
-    // Handle fund calculations
     await handleFundSettlement(task, taskStatus, submission._id);
 
     Response(201, true, "Submission created and verified", res, {
@@ -126,8 +119,7 @@ export const getMySubmissions = async (req, res) => {
     const subs = await submissionModel
       .find({ userId })
       .populate("taskId")
-      .sort({ createdAt: -1 }); // Most recent first
-
+      .sort({ createdAt: -1 }); 
     Response(200, true, "User submissions", res, subs);
   } catch (error) {
     console.error("Get submissions error:", error);
@@ -164,16 +156,13 @@ export const cancelTask = async (req, res) => {
       return Response(400, false, "Task cannot be cancelled", res);
     }
 
-    // Update task status
     task.status = "cancelled";
     await task.save();
 
-    // Apply cancellation penalty to funds
     const fund = await fundModel.findOne({ userId });
     if (fund && task.amount) {
-      // Deduct 5% of the task amount as penalty
       const penalty = task.amount * 0.05;
-      fund.amount = Math.max(0, fund.amount - penalty); // Ensure amount doesn't go negative
+      fund.amount = Math.max(0, fund.amount - penalty); 
       await fund.save();
 
       Response(200, true, "Task cancelled successfully", res, {

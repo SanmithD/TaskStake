@@ -2,6 +2,7 @@ import toast from "react-hot-toast";
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axiosInstance";
 import { UseAuthStore } from "./UseAuthStore";
+import { UseFundStore } from "./UseFundStore";
 import { UseTaskStore } from "./UseTaskStore";
 
 export const UseSubmissionStore = create((set) => ({
@@ -27,10 +28,10 @@ export const UseSubmissionStore = create((set) => ({
   submitTask: async(taskId, data) =>{
     set({ isSubLoading: true });
     try {
-      const response = await axiosInstance.post(`/submission/create/${taskId}`,data);
+      await axiosInstance.post(`/submission/create/${taskId}`,data);
       set({ isSubLoading: false });
       toast.success("Task Submitted");
-      console.log(response.data)
+      await UseFundStore.getState().getFund();
     } catch (error) {
       const msg =
         error.response?.data?.msg || error.message || "Something went wrong";
