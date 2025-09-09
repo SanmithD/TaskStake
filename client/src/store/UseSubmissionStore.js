@@ -44,7 +44,6 @@ export const UseSubmissionStore = create((set) => ({
     try {
       const response = await axiosInstance.get(`/submission/mine`);
       set({ isSubLoading: false, allTasks: response.data.data });
-      console.log(response.data);
     } catch (error) {
       const msg =
         error.response?.data?.msg || error.message || "Something went wrong";

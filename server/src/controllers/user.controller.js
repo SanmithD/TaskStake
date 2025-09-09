@@ -1,9 +1,12 @@
 import bcrypt from "bcrypt";
+import { OAuth2Client } from 'google-auth-library';
 import { fundModel } from "../models/fund.model.js";
 import { taskModel } from "../models/task.model.js";
 import { userModel } from "../models/user.model.js";
 import { Response } from "../utils/Response.util.js";
 import { generateToken } from "../utils/token.util.js";
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const signup = async (req, res) => {
   const { name, email, password } = req.body;
@@ -73,6 +76,19 @@ export const getProfile = async (req, res) => {
   }
 };
 
+export const deleteAccount = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    if(!userId) return Response(403, false, "Unauthorized", res);
+
+    const response = await userModel.findByIdAndDelete(userId);
+    Response(200, true, "User profile", res, response);
+  } catch (error) {
+    console.log(error);
+    Response(500, false, "Server error", res);
+  }
+};
+
 export const logout = async (req, res) => {
   try {
     res.clearCookie("jwt");
@@ -102,3 +118,35 @@ export const updateProfile = async(req, res) =>{
     Response(500, false, "Server error", res)
   }
 }
+
+export const signupWithGoogle = async (req, res) => {
+  const { credential } = req.body;
+  if (!credential) return Response(400, false, "Invalid credential", res);
+
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    const { email, name } = payload;
+
+    let user = await userModel.findOne({ email });
+
+    if (!user) {
+      user = new userModel({
+        name,
+        email,
+        password: "", // no password for Google users
+      });
+      await user.save();
+    }
+
+    const token = generateToken(user._id, res);
+    return Response(200, true, "Login success", res, user, token);
+  } catch (error) {
+    console.log(error);
+    return Response(500, false, "Server error", res);
+  }
+};

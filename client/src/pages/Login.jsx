@@ -76,7 +76,7 @@ function Login() {
         </form>
 
         <p className="text-center text-sm text-gray-500 mt-6">
-          Create account <a href="/signup" className="text-blue-600 hover:underline">Login</a>
+          Create account <a href="/signup" className="text-blue-600 hover:underline">Signup</a>
         </p>
       </div>
     </div>

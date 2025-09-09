@@ -1,11 +1,12 @@
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import GoogleLogin from "../components/GoogleLogin";
 import { UseAuthStore } from "../store/UseAuthStore";
 
 function Signup() {
   const navigate = useNavigate();
-  const { signup, isLoading } = UseAuthStore();
+  const { auth, signup, isLoading } = UseAuthStore();
   const [isVisible, setIsVisible] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -101,6 +102,9 @@ function Signup() {
             Login
           </a>
         </p>
+        <div>
+          <GoogleLogin onLogin={auth}/>
+        </div>
       </div>
     </div>
   );
